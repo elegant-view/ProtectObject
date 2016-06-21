@@ -57,6 +57,17 @@ export default class ProtectObject {
     }
 
     /**
+     * 判断指定键是否已存在
+     *
+     * @public
+     * @param  {string} key 键
+     * @return {boolean}
+     */
+    hasKey(key) {
+        return key in (this[IS_LOCKED] ? this[OBJECT_CACHE] : this[OBJECT]);
+    }
+
+    /**
      * 设置属性，如果被锁定的话，就先存储在缓存对象上面。
      *
      * @public
