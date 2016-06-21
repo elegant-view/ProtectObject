@@ -46,6 +46,17 @@ export default class ProtectObject {
     }
 
     /**
+     * 强制获取OBJECT上面的数据
+     *
+     * @public
+     * @param  {string} key 属性键
+     * @return {*}
+     */
+    forceGet(key) {
+        return this[OBJECT][key];
+    }
+
+    /**
      * 设置属性，如果被锁定的话，就先存储在缓存对象上面。
      *
      * @public

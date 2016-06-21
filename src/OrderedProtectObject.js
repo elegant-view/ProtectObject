@@ -29,7 +29,7 @@ export default class OrderedProtectedObject extends ProtectObject {
         this.lock();
         for (let i = 0, il = this[ORDER].length; i < il; ++i) {
             const key = this[ORDER][i];
-            const value = this.get(key);
+            const value = this.forceGet(key);
 
             const result = fn.call(context, value, key);
             if (result) {

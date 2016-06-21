@@ -1,0 +1,1 @@
+import ProtectObjectSpec from './ProtectObjectSpec';
