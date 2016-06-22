@@ -16,14 +16,6 @@ export default class OrderedProtectedObject extends ProtectObject {
         this[ORDER_CACHE] = [];
     }
 
-    /**
-     * 带有顺序的set，先set先遍历到
-     *
-     * @override
-     * @public
-     * @param {string} key   键
-     * @param {*} value 值
-     */
     set(key, value) {
         // 没有key的时候才push
         if (!this.hasKey(key)) {
@@ -33,14 +25,6 @@ export default class OrderedProtectedObject extends ProtectObject {
         super.set(key, value);
     }
 
-    /**
-     * 保持先后顺序的遍历
-     *
-     * @override
-     * @public
-     * @param  {Function} fn      遍历回调函数
-     * @param  {Object=}   context 遍历函数执行的上下文n]
-     */
     safeIterate(fn, context) {
         if (!fn) {
             return;
@@ -57,6 +41,18 @@ export default class OrderedProtectedObject extends ProtectObject {
             }
         }
 
+        this[ORDER] = this[ORDER_CACHE];
+        this[ORDER_CACHE] = [];
+        this.unlock();
+    }
+
+    safeExecute(fn, context) {
+        if (!fn) {
+            return;
+        }
+
+        this.lock();
+        fn.call(context);
         this[ORDER] = this[ORDER_CACHE];
         this[ORDER_CACHE] = [];
         this.unlock();
