@@ -5,7 +5,7 @@
 
 const OBJECT = Symbol('object');
 const OBJECT_CACHE = Symbol('objectCache');
-const IS_LOCKED = Symbol('isLocked');
+const LOCKED = Symbol('locked');
 const LOCK = Symbol('lock');
 const UNLOCK = Symbol('unlock');
 
@@ -14,7 +14,7 @@ export default class ProtectObject {
         this[OBJECT] = {};
         this[OBJECT_CACHE] = {};
 
-        this[IS_LOCKED] = false;
+        this[LOCKED] = 0;
     }
 
     /**
@@ -24,7 +24,7 @@ export default class ProtectObject {
      * @return {boolean} 是否锁定
      */
     isLocked() {
-        return this[IS_LOCKED];
+        return this[LOCKED];
     }
 
     /**
@@ -64,7 +64,7 @@ export default class ProtectObject {
      * @return {boolean}
      */
     hasKey(key) {
-        return key in (this[IS_LOCKED] ? this[OBJECT_CACHE] : this[OBJECT]);
+        return key in (this[LOCKED] ? this[OBJECT_CACHE] : this[OBJECT]);
     }
 
     /**
@@ -75,7 +75,7 @@ export default class ProtectObject {
      * @param {*} value 属性值
      */
     set(key, value) {
-        const obj = this[IS_LOCKED] ? this[OBJECT_CACHE] : this[OBJECT];
+        const obj = this[LOCKED] ? this[OBJECT_CACHE] : this[OBJECT];
         obj[key] = value;
     }
 
@@ -87,7 +87,7 @@ export default class ProtectObject {
      * @return {*}     属性值
      */
     get(key) {
-        return this[IS_LOCKED] ? this[OBJECT_CACHE][key] : this[OBJECT][key];
+        return this[LOCKED] ? this[OBJECT_CACHE][key] : this[OBJECT][key];
     }
 
     /**
@@ -116,11 +116,18 @@ export default class ProtectObject {
     }
 
     [LOCK]() {
-        this[IS_LOCKED] = true;
+        this[LOCKED] >= 0 && ++this[LOCKED];
     }
 
     [UNLOCK]() {
-        this[IS_LOCKED] = false;
+        if (this[LOCKED] === 0) {
+            return;
+        }
+        else if (this[LOCKED] < 0) {
+            throw new Error('wrong lock state.');
+        }
+
+        --this[LOCKED];
 
         this[OBJECT] = this[OBJECT_CACHE];
         this[OBJECT_CACHE] = {};

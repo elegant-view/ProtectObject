@@ -16,6 +16,14 @@ export default class OrderedProtectedObject extends ProtectObject {
         this[ORDER_CACHE] = [];
     }
 
+    /**
+     * 设置值
+     *
+     * @override
+     * @public
+     * @param {string} key   键
+     * @param {*} value 值
+     */
     set(key, value) {
         // 没有key的时候才push
         if (!this.hasKey(key)) {
@@ -25,6 +33,14 @@ export default class OrderedProtectedObject extends ProtectObject {
         super.set(key, value);
     }
 
+    /**
+     * 按序迭代
+     *
+     * @override
+     * @public
+     * @param  {Function} fn      迭代回调
+     * @param  {Object=}   context 迭代上下文
+     */
     safeIterate(fn, context) {
         if (!fn) {
             return;
@@ -46,6 +62,14 @@ export default class OrderedProtectedObject extends ProtectObject {
         this.unlock();
     }
 
+    /**
+     * 安全执行函数
+     *
+     * @override
+     * @public
+     * @param  {Function} fn      要执行的函数
+     * @param  {Object=}   context 函数上下文
+     */
     safeExecute(fn, context) {
         if (!fn) {
             return;
