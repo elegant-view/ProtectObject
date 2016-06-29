@@ -24,7 +24,7 @@ export default class ProtectObject {
      * @return {boolean} 是否锁定
      */
     isLocked() {
-        return this[LOCKED];
+        return !!this[LOCKED];
     }
 
     /**
@@ -41,8 +41,8 @@ export default class ProtectObject {
      *
      * @protected
      */
-    unlock() {
-        this[UNLOCK]();
+    unlock(shouldNotNewObject) {
+        this[UNLOCK](shouldNotNewObject);
     }
 
     /**
@@ -119,7 +119,7 @@ export default class ProtectObject {
         this[LOCKED] >= 0 && ++this[LOCKED];
     }
 
-    [UNLOCK]() {
+    [UNLOCK](shouldNotNewObject) {
         if (this[LOCKED] === 0) {
             return;
         }
@@ -129,18 +129,36 @@ export default class ProtectObject {
 
         --this[LOCKED];
 
-        this[OBJECT] = this[OBJECT_CACHE];
+        if (this[LOCKED] === 0) {
+            this.recovery(shouldNotNewObject);
+        }
+    }
+
+    // protected
+    recovery(shouldNotNewObject) {
+        if (shouldNotNewObject) {
+            for (let key in this[OBJECT_CACHE]) {
+                if (!this[OBJECT_CACHE].hasOwnProperty(key)) {
+                    continue;
+                }
+                this[OBJECT][key] = this[OBJECT_CACHE][key];
+            }
+        }
+        else {
+            this[OBJECT] = this[OBJECT_CACHE];
+        }
         this[OBJECT_CACHE] = {};
     }
 
-    safeExecute(fn, context) {
+    // public
+    safeExecute(fn, context, shouldNotNewObject) {
         if (!fn) {
             return;
         }
 
         this[LOCK]();
         fn.call(context);
-        this[UNLOCK]();
+        this[UNLOCK](shuouldNotOverride);
     }
 
     /**

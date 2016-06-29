@@ -70,15 +70,36 @@ export default class OrderedProtectedObject extends ProtectObject {
      * @param  {Function} fn      要执行的函数
      * @param  {Object=}   context 函数上下文
      */
-    safeExecute(fn, context) {
+    safeExecute(fn, context, shouldNotNewObject) {
         if (!fn) {
             return;
         }
 
         this.lock();
         fn.call(context);
-        this[ORDER] = this[ORDER_CACHE];
+        this.unlock(shouldNotNewObject);
+
+        if (!this.isLocked()) {
+            this.recovery(shouldNotNewObject);
+        }
+    }
+
+    // protected
+    // override
+    recovery(shouldNotNewObject) {
+        if (shouldNotNewObject) {
+            for (let i = 0, il = this[ORDER_CACHE].length; i < il; ++i) {
+                // 不能有重复的key。
+                if (!this.hasKey(this[ORDER_CACHE][i])) {
+                    this[ORDER].push(this[ORDER_CACHE][i]);
+                }
+            }
+        }
+        else {
+            this[ORDER] = this[ORDER_CACHE];
+        }
         this[ORDER_CACHE] = [];
-        this.unlock();
+
+        super.recovery(shouldNotNewObject);
     }
 }
