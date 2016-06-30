@@ -158,7 +158,7 @@ export default class ProtectObject {
 
         this[LOCK]();
         fn.call(context);
-        this[UNLOCK](shuouldNotOverride);
+        this[UNLOCK](shouldNotNewObject);
     }
 
     /**

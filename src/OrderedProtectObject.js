@@ -57,8 +57,6 @@ export default class OrderedProtectedObject extends ProtectObject {
             }
         }
 
-        this[ORDER] = this[ORDER_CACHE];
-        this[ORDER_CACHE] = [];
         this.unlock();
     }
 
