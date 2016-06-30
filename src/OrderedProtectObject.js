@@ -82,8 +82,13 @@ export default class OrderedProtectedObject extends ProtectObject {
         }
     }
 
-    // protected
-    // override
+    /**
+     * 恢复对象。额外处理了排序数组。
+     *
+     * @protected
+     * @override
+     * @param  {boolean} shouldNotNewObject 在解锁之后，是否需要新创建一个数据对象
+     */
     recovery(shouldNotNewObject) {
         if (shouldNotNewObject) {
             for (let i = 0, il = this[ORDER_CACHE].length; i < il; ++i) {

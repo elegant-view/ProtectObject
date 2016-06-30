@@ -40,6 +40,7 @@ export default class ProtectObject {
      * 解锁
      *
      * @protected
+     * @param {boolean} shouldNotNewObject 在解锁之后，是否需要新创建一个数据对象
      */
     unlock(shouldNotNewObject) {
         this[UNLOCK](shouldNotNewObject);
@@ -134,7 +135,15 @@ export default class ProtectObject {
         }
     }
 
-    // protected
+    /**
+     * 将缓存对象里面的数据恢复到正式对象中去。有两种恢复方式：
+     *
+     * 1、直接将缓存对象赋给正式对象，丢弃掉正式对象上的所有属性；
+     * 2、将缓存对象上的属性逐一拷贝给正式对象。
+     *
+     * @protected
+     * @param  {boolean} shouldNotNewObject 在解锁之后，是否需要新创建一个数据对象
+     */
     recovery(shouldNotNewObject) {
         if (shouldNotNewObject) {
             for (let key in this[OBJECT_CACHE]) {
@@ -150,7 +159,14 @@ export default class ProtectObject {
         this[OBJECT_CACHE] = {};
     }
 
-    // public
+    /**
+     * 安全的执行方法，主要是保护对象
+     *
+     * @public
+     * @param  {Function=} fn                 要安全执行的函数，如果不传，则啥事也不做
+     * @param  {Object=}   context           函数执行上下文
+     * @param  {boolean}   shouldNotNewObject 在解锁之后，是否需要新创建一个数据对象
+     */
     safeExecute(fn, context, shouldNotNewObject) {
         if (!fn) {
             return;
